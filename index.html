@@ -690,8 +690,8 @@
 
   (function cursorLoop() {
     hueTime += 0.02;
-    curX += (mouseX - curX) * 0.35;
-    curY += (mouseY - curY) * 0.35;
+    curX = mouseX;   // 1:1 with the real cursor, no lag
+    curY = mouseY;
 
     const hue = (hueTime * 720) % 360;            // zooms through the whole rainbow
     const flash = 1 + 0.25 * Math.sin(hueTime * 22); // flashing scale pulse
