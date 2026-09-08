@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>abi food diary</title>
+<style>
+  @font-face {
+    font-family: 'WakingTheWitch';
+    src: url('font.woff2') format('woff2');
+    font-display: swap;
+  }
+
+  :root {
+    --pink-1: #ffe3f0;
+    --pink-2: #ffc4de;
+    --pink-3: #ff8fb8;
+    --pink-4: #ff5fa2;
+    --rose: #ff4d94;
+    --cream: #fffafd;
+    --shadow: rgba(255, 77, 148, 0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'WakingTheWitch', 'Comic Sans MS', 'Segoe Script', cursive;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(255,255,255,0.85) 0%, transparent 40%),
+      radial-gradient(circle at 85% 25%, rgba(255,182,213,0.75) 0%, transparent 45%),
+      radial-gradient(circle at 50% 90%, rgba(255,205,228,0.9) 0%, transparent 50%),
+      linear-gradient(160deg, var(--pink-1) 0%, var(--pink-2) 45%, #ffd3e6 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: #b3135e;
+  }
+
+  #sparkle-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px 80px;
+  }
+
+  /* ── Header ─────────────────────────────── */
+  header {
+    text-align: center;
+    padding: 45px 15px 30px;
+    position: relative;
+  }
+
+  header h1 {
+    font-size: clamp(2.6rem, 7vw, 5rem);
+    font-weight: normal;
+    letter-spacing: 2px;
+    color: var(--rose);
+    text-shadow: 3px 3px 0 #fff,
+                 -3px 3px 0 #fff,
+                 3px -3px 0 #fff,
+                 -3px -3px 0 #fff,
+                 0 6px 18px var(--shadow);
+    animation: floaty 4s ease-in-out infinite;
+  }
+
+  header .subtitle {
+    margin-top: 12px;
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+    color: #d4317d;
+    background: rgba(255,255,255,0.6);
+    display: inline-block;
+    padding: 6px 22px;
+    border-radius: 60px;
+    border: 2px dashed var(--pink-3);
+    backdrop-filter: blur(4px);
+  }
+
+  @keyframes floaty {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+  }
+
+  .header-rose { font-size: 1.4rem; letter-spacing: 8px; color: var(--pink-4); }
+
+  /* ── Gallery ────────────────────────────── */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 34px;
+    margin-top: 40px;
+  }
+
+  .frame {
+    position: relative;
+    background: var(--cream);
+    border-radius: 18px;
+    padding: 14px 14px 8px;
+    box-shadow: 0 12px 30px var(--shadow), 0 2px 6px rgba(255,77,148,.15);
+    border: 3px solid #fff;
+    outline: 2px solid var(--pink-3);
+    transition: transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .35s;
+    animation: popIn .6s backwards;
+    cursor: pointer;
+  }
+
+  .frame:nth-child(3n+1) { transform: rotate(-2deg); }
+  .frame:nth-child(3n+2) { transform: rotate(1.5deg); }
+  .frame:nth-child(3n+3) { transform: rotate(-1deg); }
+
+  .frame:hover {
+    transform: rotate(0deg) translateY(-10px) scale(1.04);
+    box-shadow: 0 22px 45px var(--shadow), 0 6px 12px rgba(255,77,148,.22);
+    z-index: 5;
+  }
+
+  /* scalloped / stitched cute edge */
+  .frame::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border-radius: 13px;
+    border: 2px dashed var(--pink-3);
+    opacity: .7;
+    pointer-events: none;
+  }
+
+  /* little bow on top of the frame */
+  .frame .bow {
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.7rem;
+    filter: drop-shadow(0 3px 4px var(--shadow));
+    z-index: 2;
+    transition: transform .3s;
+  }
+  .frame:hover .bow { transform: translateX(-50%) scale(1.2) rotate(10deg); }
+
+  .frame img {
+    width: 100%;
+    height: 230px;
+    object-fit: cover;
+    border-radius: 12px;
+    display: block;
+    background: linear-gradient(135deg, #ffe9f3, #ffd0e3);
+    border: 2px solid #fff;
+  }
+
+  .frame figcaption {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+    font-size: 0.9rem;
+    padding: 11px 4px 8px;
+    color: var(--pink-4);
+    letter-spacing: 2px;
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: translateY(30px) scale(.9); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* ── Lightbox ───────────────────────────── */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(66, 5, 38, 0.75);
+    backdrop-filter: blur(6px);
+    transition: opacity .3s;
+  }
+  .lightbox.open { display: flex; }
+
+  .lightbox img {
+    max-width: 90vw;
+    max-height: 85vh;
+    border-radius: 20px;
+    border: 10px solid #fff;
+    outline: 4px solid var(--pink-3);
+    box-shadow: 0 20px 60px rgba(0,0,0,.45), 0 0 40px rgba(255,143,184,.6);
+    animation: popIn .35s;
+  }
+
+  .lightbox .close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 3rem;
+    color: #fff;
+    cursor: pointer;
+    text-shadow: 0 3px 10px rgba(0,0,0,.4);
+    transition: transform .3s;
+  }
+  .lightbox .close:hover { transform: rotate(90deg) scale(1.2); }
+  .lightbox .cap {
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    font-size: 1.4rem;
+    background: rgba(255,77,148,.4);
+    padding: 6px 24px;
+    border-radius: 40px;
+    border: 2px dashed #fff;
+  }
+
+  /* ── Footer ─────────────────────────────── */
+  footer {
+    text-align: center;
+    margin-top: 60px;
+    font-size: 1.2rem;
+    color: #d4317d;
+    letter-spacing: 0;
+  }
+  footer .hearts { letter-spacing: 6px; color: var(--pink-4); animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  /* ── Scrollbar ──────────────────────────── */
+  ::-webkit-scrollbar { width: 12px; }
+  ::-webkit-scrollbar-track { background: var(--pink-1); }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(var(--pink-3), var(--pink-4));
+    border-radius: 20px;
+    border: 3px solid var(--pink-1);
+  }
+
+  @media (max-width: 520px) {
+    .gallery { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
+    .frame img { height: 160px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="sparkle-canvas"></canvas>
+
+<div class="container">
+  <header>
+    <div class="header-rose">✿ ♡ ⋆ ✿ ♡ ⋆</div>
+    <h1>hi this is my food</h1>
+    <p class="subtitle">i know it might be messy but i love the taste ♡</p>
+    <div class="header-rose">⋆ ♡ ✿ ⋆ ♡ ✿</div>
+  </header>
+
+  <main class="gallery" id="gallery"></main>
+
+  <footer>
+    <div>made with ✿ lots of pink &amp; sparkles</div>
+    <div class="hearts">♡ ♡ ♡</div>
+  </footer>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <span class="close">✕</span>
+  <img id="lb-img" src="" alt="">
+  <div class="cap" id="lb-cap"></div>
+</div>
+
+<script>
+  const IMAGES = [
+    "IMG_1099.jpg", "IMG_1189.jpg", "IMG_1478.jpg", "IMG_2288.jpg",
+    "IMG_2853.jpg", "IMG_2873.jpg", "IMG_2874.png", "IMG_2876.jpg",
+    "IMG_6304.jpg", "IMG_6619.jpg", "IMG_8494.png", "IMG_8994.png",
+    "IMG_8996.png", "IMG_8997.png", "IMG_8998.png", "IMG_9251.jpg",
+    "IMG_9479.png", "IMG_9587.jpg", "IMG_9751.jpg", "IMG_9974.jpg"
+  ];
+
+  const BOWS = ["🎀", "✿", "🌸", "♡", "🌟", "💗", "🦋"];
+
+  const gallery = document.getElementById('gallery');
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lb-img');
+  const lbCap = document.getElementById('lb-cap');
+
+  IMAGES.forEach((name, i) => {
+    const fig = document.createElement('figure');
+    fig.className = 'frame';
+    fig.style.animationDelay = (i * 0.06) + 's';
+    fig.innerHTML = `
+      <span class="bow">${BOWS[i % BOWS.length]}</span>
+      <img src="Images/${name}" alt="cute memory ${i + 1}" loading="lazy">
+      <figcaption>
+        <span>${BOWS[(i + 1) % BOWS.length]}</span>
+        <span>♡</span>
+        <span>${BOWS[(i + 2) % BOWS.length]}</span>
+      </figcaption>`;
+    fig.addEventListener('click', () => {
+      lbImg.src = fig.querySelector('img').src;
+      lbCap.textContent = fig.querySelector('figcaption').textContent;
+      lightbox.classList.add('open');
+    });
+    gallery.appendChild(fig);
+  });
+
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox || e.target.classList.contains('close')) {
+      lightbox.classList.remove('open');
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') lightbox.classList.remove('open');
+  });
+
+  /* ================= SPARKLES ✨ ================= */
+  const canvas = document.getElementById('sparkle-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, dpr;
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const COLORS = ['#ffffff', '#ffd7ea', '#ff9ec7', '#ff6fb5', '#fff3fa', '#ffe0a3'];
+
+  function starPath(x, y, r, points = 4) {
+    ctx.beginPath();
+    for (let i = 0; i < points * 2; i++) {
+      const rad = i % 2 === 0 ? r : r * 0.4;
+      const a = (i * Math.PI) / points - Math.PI / 2;
+      const px = x + Math.cos(a) * rad;
+      const py = y + Math.sin(a) * rad;
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+  }
+
+  // ambient floating sparkles
+  const ambient = [];
+  const AMBIENT_COUNT = 45;
+  for (let i = 0; i < AMBIENT_COUNT; i++) {
+    ambient.push(newSparkle(true));
+  }
+
+  function newSparkle(isAmbient) {
+    return {
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: 1.5 + Math.random() * 5,
+      vy: isAmbient ? -(0.15 + Math.random() * 0.45) : 0,
+      vx: (Math.random() - 0.5) * 0.3,
+      tw: Math.random() * Math.PI * 2,
+      ts: 0.02 + Math.random() * 0.04,
+      color: COLORS[(Math.random() * COLORS.length) | 0],
+      life: isAmbient ? 1 : 1,
+      fade: isAmbient ? 0 : 0.012 + Math.random() * 0.02,
+      rot: (Math.random() - 0.5) * 0.15
+    };
+  }
+
+  // cursor-following sparkles
+  const cursorTrail = [];
+  const MAX_TRAIL = 300;
+  let lastSpawn = 0;
+
+  window.addEventListener('mousemove', (e) => {
+    const now = performance.now();
+    if (now - lastSpawn < 18) return;  // don't spam-spawn while moving fast
+    lastSpawn = now;
+
+    for (let i = 0; i < 3; i++) {
+      const s = newSparkle(false);
+      s.x = e.clientX + (Math.random() - 0.5) * 12;
+      s.y = e.clientY + (Math.random() - 0.5) * 12;
+      s.r = 2 + Math.random() * 4;
+      s.vx = (Math.random() - 0.5) * 1.1;
+      s.vy = (Math.random() - 0.5) * 1.1 - 0.3;
+      s.fade = 0.004 + Math.random() * 0.008;   // slower, smoother fade
+      cursorTrail.push(s);
+    }
+    if (cursorTrail.length > MAX_TRAIL) cursorTrail.splice(0, cursorTrail.length - MAX_TRAIL);
+  });
+
+  // little burst on click 💥
+  window.addEventListener('click', (e) => {
+    for (let i = 0; i < 10; i++) {
+      const s = newSparkle(false);
+      const a = (i / 10) * Math.PI * 2;
+      s.x = e.clientX;
+      s.y = e.clientY;
+      s.r = 1.5 + Math.random() * 5;
+      s.vx = Math.cos(a) * (1.5 + Math.random() * 2);
+      s.vy = Math.sin(a) * (1.5 + Math.random() * 2) - 0.8;
+      s.fade = 0.006 + Math.random() * 0.01;
+      cursorTrail.push(s);
+    }
+  });
+
+  let tick = 0;
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    tick += 0.016;
+
+    // ambient
+    for (const s of ambient) {
+      s.y += s.vy;
+      s.x += s.vx + Math.sin(tick + s.tw) * 0.2;
+      s.tw += s.ts;
+      if (s.y < -20) { s.y = H + 20; s.x = Math.random() * W; }
+      if (s.x < -20) s.x = W + 20;
+      if (s.x > W + 20) s.x = -20;
+
+      const alpha = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(s.tw));
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = s.color;
+      ctx.save();
+      ctx.translate(s.x, s.y);
+      ctx.rotate(s.rot);
+      starPath(0, 0, s.r);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // cursor trail
+    for (let i = cursorTrail.length - 1; i >= 0; i--) {
+      const s = cursorTrail[i];
+      s.x += s.vx;
+      s.y += s.vy;
+      s.vy += 0.03;
+      s.r *= 0.99;
+      s.life -= s.fade;
+      s.rot += 0.03;
+      if (s.life <= 0.02 || s.r < 0.5) { cursorTrail.splice(i, 1); continue; }
+
+      ctx.save();
+      ctx.globalAlpha = Math.pow(Math.max(s.life, 0), 1.4) * 0.9;
+      ctx.shadowColor = s.color;
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = s.color;
+      ctx.translate(s.x, s.y);
+      ctx.rotate(s.rot);
+      starPath(0, 0, s.r);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(draw);
+  }
+  draw();
+</script>
+</body>
+</html>
