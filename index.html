@@ -38,6 +38,36 @@
     color: #b3135e;
   }
 
+  /* crazy rainbow cursor replaces the normal one */
+  * { cursor: none !important; }
+  #cursor-star {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    pointer-events: none;
+    width: 26px;
+    height: 26px;
+    background: currentColor;
+    clip-path: polygon(0 0, 0 100%, 23% 100%, 45% 55%, 100% 100%, 100% 81%, 50% 41%, 23% 47%);
+    filter: drop-shadow(0 0 6px currentColor) drop-shadow(0 0 14px currentColor);
+    will-change: transform, color;
+    display: none;
+  }
+  #cursor-ring {
+    position: fixed;
+    z-index: 9998;
+    pointer-events: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 16px currentColor, inset 0 0 10px currentColor;
+    will-change: transform, color;
+    display: none;
+  }
+
   #sparkle-canvas {
     position: fixed;
     inset: 0;
@@ -91,6 +121,33 @@
   }
 
   .header-rose { font-size: 1.4rem; letter-spacing: 8px; color: var(--pink-4); }
+
+  /* lets you keep track of how many pics you love */
+  .love-count {
+    margin: 16px auto 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.2rem;
+    color: #fff;
+    background: linear-gradient(135deg, var(--pink-3), var(--rose));
+    padding: 7px 22px;
+    border-radius: 60px;
+    border: 2px dashed #fff;
+    box-shadow: 0 6px 16px var(--shadow);
+  }
+  .love-count .heart-ico { animation: pulse 1.4s ease-in-out infinite; }
+  .love-count #likeCount { font-size: 1.35rem; }
+
+  /* top social links */
+  .top-socials {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 26px;
+  }
+  .top-socials .social-link { padding: 8px 16px; font-size: 1.02rem; }
 
   /* ── Gallery ────────────────────────────── */
   .gallery {
@@ -146,6 +203,54 @@
     transition: transform .3s;
   }
   .frame:hover .bow { transform: translateX(-50%) scale(1.2) rotate(10deg); }
+
+  .like {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: #fff;
+    box-shadow: 0 4px 12px var(--shadow), 0 0 0 2px var(--pink-2);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    color: var(--pink-4);
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1), background .3s, color .3s;
+    z-index: 3;
+  }
+  .like:hover { transform: scale(1.18) rotate(-8deg); }
+  .like.liked {
+    background: linear-gradient(135deg, #ff5fa2, #ff2e63);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(255,46,99,.45), 0 0 0 3px var(--pink-2);
+  }
+  .like.liked span { animation: heartPop .4s ease; }
+  @keyframes heartPop {
+    0% { transform: scale(0); }
+    60% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+  }
+  .like-count {
+    position: absolute;
+    top: 66px;
+    right: 16px;
+    background: #fff;
+    color: var(--rose);
+    font-size: 0.95rem;
+    padding: 2px 11px;
+    border-radius: 40px;
+    border: 2px dashed var(--pink-3);
+    box-shadow: 0 4px 10px var(--shadow);
+    z-index: 3;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+  .like-count b { animation: heartPop .3s ease; display: inline-block; }
 
   .frame img {
     width: 100%;
@@ -228,10 +333,51 @@
     margin-top: 60px;
     font-size: 1.2rem;
     color: #d4317d;
-    letter-spacing: 0;
   }
   footer .hearts { letter-spacing: 6px; color: var(--pink-4); animation: pulse 2s ease-in-out infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  /* ── Socials ────────────────────────────── */
+  .socials {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .socials .s-label {
+    width: 100%;
+    font-size: 1.45rem;
+    color: #d4317d;
+    margin-bottom: 4px;
+  }
+  .social-link {
+    text-decoration: none;
+    color: #d4317d;
+    background: #fff;
+    border: 2px solid var(--pink-3);
+    padding: 10px 20px;
+    border-radius: 60px;
+    font-size: 1.08rem;
+    box-shadow: 0 6px 14px var(--shadow);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s, background .3s;
+  }
+  .social-link:hover {
+    transform: translateY(-4px) scale(1.07) rotate(-2deg);
+    background: var(--pink-2);
+    box-shadow: 0 12px 24px var(--shadow);
+  }
+  .social-link.insta  { background: linear-gradient(135deg,#fff, #ffe0f1); }
+  .social-link.x      { background: #fff; }
+  .social-link.tiktok { background: linear-gradient(135deg, #fff, #fff7fb); }
+  .social-link.roblox { background: linear-gradient(135deg, #fff, #f0f4ff); }
 
   /* ── Scrollbar ──────────────────────────── */
   ::-webkit-scrollbar { width: 12px; }
@@ -251,19 +397,29 @@
 <body>
 
 <canvas id="sparkle-canvas"></canvas>
+<div id="cursor-ring"></div>
+<div id="cursor-star"></div>
 
 <div class="container">
   <header>
     <div class="header-rose">✿ ♡ ⋆ ✿ ♡ ⋆</div>
     <h1>hi this is my food</h1>
     <p class="subtitle">i know it might be messy but i love the taste ♡</p>
+    <div class="love-count"><span id="likeCount">0</span> hearts</div>
+    <div class="top-socials">
+      <a class="social-link insta" href="https://www.instagram.com/eyesacrossthehill/" target="_blank" rel="noopener"><span>♡</span> instagram</a>
+      <a class="social-link x" href="https://x.com/moteikon" target="_blank" rel="noopener"><span>✿</span> x</a>
+      <a class="social-link tiktok" href="https://www.tiktok.com/@meowmeowmeow122" target="_blank" rel="noopener"><span>⋆</span> tiktok</a>
+      <a class="social-link roblox" href="https://www.roblox.com/users/90603862/profile" target="_blank" rel="noopener"><span>🌸</span> roblox</a>
+      <a class="social-link roblox" href="https://www.roblox.com/communities/15274273/Mountain-Priestess" target="_blank" rel="noopener"><span>✧</span> mountain priestess</a>
+    </div>
     <div class="header-rose">⋆ ♡ ✿ ⋆ ♡ ✿</div>
   </header>
 
   <main class="gallery" id="gallery"></main>
 
   <footer>
-    <div>made with ✿ lots of pink &amp; sparkles</div>
+    <div>hope u like the food ♡</div>
     <div class="hearts">♡ ♡ ♡</div>
   </footer>
 </div>
@@ -285,6 +441,22 @@
 
   const BOWS = ["🎀", "✿", "🌸", "♡", "🌟", "💗", "🦋"];
 
+  const likeState = JSON.parse(localStorage.getItem('foodLikes') || '{"counts":{},"myLikes":{}}');
+
+  function countOf(name) { return likeState.counts[name] || 0; }
+  function totalLikes() {
+    return Object.values(likeState.counts).reduce((a, b) => a + b, 0);
+  }
+
+  const likeCountEl = document.getElementById('likeCount');
+  function updateHeaderCount() {
+    const n = totalLikes();
+    likeCountEl.textContent = n;
+    likeCountEl.style.transform = 'scale(1.35)';
+    setTimeout(() => { likeCountEl.style.transform = 'scale(1)'; }, 180);
+  }
+  updateHeaderCount();
+
   const gallery = document.getElementById('gallery');
   const lightbox = document.getElementById('lightbox');
   const lbImg = document.getElementById('lb-img');
@@ -302,6 +474,39 @@
         <span>♡</span>
         <span>${BOWS[(i + 2) % BOWS.length]}</span>
       </figcaption>`;
+
+    const likeBtn = document.createElement('button');
+    likeBtn.className = 'like';
+    likeBtn.title = 'i love this one ♡';
+    likeBtn.innerHTML = '<span>♡</span>';
+    if (likeState.myLikes[name]) {
+      likeBtn.classList.add('liked');
+      likeBtn.querySelector('span').textContent = '♥';
+    }
+    const likeBadge = document.createElement('span');
+    likeBadge.className = 'like-count';
+    likeBadge.innerHTML = `♥ <b>${countOf(name)}</b>`;
+    likeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const willLike = !likeState.myLikes[name];
+      likeBtn.classList.toggle('liked', willLike);
+      likeBtn.querySelector('span').textContent = willLike ? '♥' : '♡';
+      if (willLike) {
+        likeState.counts[name] = countOf(name) + 1;
+        likeState.myLikes[name] = true;
+        const r = e.currentTarget.getBoundingClientRect();
+        spawnBurst(r.left + r.width / 2, r.top + r.height / 2, 14);
+      } else {
+        likeState.counts[name] = Math.max(0, countOf(name) - 1);
+        delete likeState.myLikes[name];
+      }
+      likeBadge.querySelector('b').textContent = countOf(name);
+      localStorage.setItem('foodLikes', JSON.stringify(likeState));
+      updateHeaderCount();
+    });
+    fig.appendChild(likeBtn);
+    fig.appendChild(likeBadge);
+
     fig.addEventListener('click', () => {
       lbImg.src = fig.querySelector('img').src;
       lbCap.textContent = fig.querySelector('figcaption').textContent;
@@ -395,19 +600,23 @@
     if (cursorTrail.length > MAX_TRAIL) cursorTrail.splice(0, cursorTrail.length - MAX_TRAIL);
   });
 
-  // little burst on click 💥
-  window.addEventListener('click', (e) => {
-    for (let i = 0; i < 10; i++) {
+  function spawnBurst(x, y, count) {
+    for (let i = 0; i < count; i++) {
       const s = newSparkle(false);
-      const a = (i / 10) * Math.PI * 2;
-      s.x = e.clientX;
-      s.y = e.clientY;
+      const a = (i / count) * Math.PI * 2 + Math.random() * 0.6;
+      s.x = x;
+      s.y = y;
       s.r = 1.5 + Math.random() * 5;
       s.vx = Math.cos(a) * (1.5 + Math.random() * 2);
       s.vy = Math.sin(a) * (1.5 + Math.random() * 2) - 0.8;
       s.fade = 0.006 + Math.random() * 0.01;
       cursorTrail.push(s);
     }
+  }
+
+  // little burst on click 💥
+  window.addEventListener('click', (e) => {
+    spawnBurst(e.clientX, e.clientY, 10);
   });
 
   let tick = 0;
@@ -462,6 +671,42 @@
     requestAnimationFrame(draw);
   }
   draw();
+
+  /* ─── crazy rainbow cursor ─── */
+  const cursorStar = document.getElementById('cursor-star');
+  const cursorRing = document.getElementById('cursor-ring');
+  let mouseX = -9999, mouseY = -9999, curX = -9999, curY = -9999, hueTime = 0;
+
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursorStar.style.display = 'block';
+    cursorRing.style.display = 'block';
+  });
+  document.addEventListener('mouseleave', () => {
+    cursorStar.style.display = 'none';
+    cursorRing.style.display = 'none';
+  });
+
+  (function cursorLoop() {
+    hueTime += 0.02;
+    curX += (mouseX - curX) * 0.35;
+    curY += (mouseY - curY) * 0.35;
+
+    const hue = (hueTime * 720) % 360;            // zooms through the whole rainbow
+    const flash = 1 + 0.25 * Math.sin(hueTime * 22); // flashing scale pulse
+    const color = `hsl(${hue}, 100%, 62%)`;
+    const color2 = `hsl(${(hue + 100) % 360}, 100%, 62%)`;
+
+    cursorStar.style.transform = `translate(${curX}px, ${curY}px) scale(${flash})`;
+    cursorStar.style.color = color;
+    cursorRing.style.transform = `translate(${curX}px, ${curY}px) translate(-50%,-50%) scale(${1.1 - flash * 0.25})`;
+    cursorRing.style.borderColor = color2;
+    cursorRing.style.boxShadow = `0 0 18px ${color2}, inset 0 0 12px ${color}`;
+    cursorRing.style.color = color2;
+
+    requestAnimationFrame(cursorLoop);
+  })();
 </script>
 </body>
 </html>
